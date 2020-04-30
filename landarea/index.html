@@ -2,42 +2,112 @@
 <html>
 
 <head>
-    <title>Index</title>
+    <title>Home</title>
+    <meta charset="utf-8">
     <style type="text/css">
     </style>
 </head>
 
 <body>
-    <div>
-        <input id="file" type="file" />
-        <button id="upload" type="button">upload</button>
-    </div>
-    <script type="text/javascript">
-        let button = document.getElementById('upload')
-        button.addEventListener('click', event => {
-            let fileObj = document.getElementById('file').files[0]
-            if (fileObj) {
-                // let url = 'http://10.67.76.16:3000/file_upload'
-                const url = 'http://localhost:43855/upload'
-                let formData = new FormData()
-                formData.append('image', fileObj)
-                let xhr = new XMLHttpRequest()
+<div>
+    <input id="file" type="file"/>
+    <button id="upload" type="button">upload</button>
+    <a href="http://127.0.0.1:55678/download" download="beauty.png">下载</a>
+</div>
+<table>
+    <tr>
+        <td valign="top" width="50%">
+            <p>Click "Open" to create a connection to the server,
+                "Send" to send a message to the server and "Close" to close the connection.
+                You can change the message and send multiple times.
+            <p>
+                <form>
+                    <button id="open">Open</button>
+                    <button id="close">Close</button>
+            <p>
+                <input id="input" type="text" value="Hello world!">
+                <button id="send">Send</button>
+            </p>
+        </td>
+        <td valign="top" width="50%">
+            <div id="output"></div>
+        </td>
+    </tr>
+</table>
 
-                xhr.onload = function () {
-                    console.log('ok')
-                    // console.log(JSON.parse(xhr.responseText))
-                }
-                xhr.onerror = function () {
-                    console.log('fail')
-                }
-                xhr.open('post', url, true)
-                xhr.send(formData)
-
-            } else {
-                console.log('请选择文件')
+<script type="text/javascript">
+    window.addEventListener("load", function (evt) {
+        const output = document.getElementById("output");
+        const input = document.getElementById("input");
+        let ws;
+        const print = function (message) {
+            const d = document.createElement("div");
+            d.innerHTML = message;
+            output.appendChild(d);
+        };
+        document.getElementById("open").onclick = function (evt) {
+            if (ws) {
+                return false;
             }
-        })
-    </script>
+            console.log("WS: {{.}}")
+            ws = new WebSocket("{{.}}");
+            ws.onopen = function (evt) {
+                print("OPEN");
+            }
+            ws.onclose = function (evt) {
+                print("CLOSE");
+                ws = null;
+            }
+            ws.onmessage = function (evt) {
+                print("RESPONSE: " + evt.data);
+            }
+            ws.onerror = function (evt) {
+                print("ERROR: " + evt.data);
+            }
+            return false;
+        };
+        document.getElementById("send").onclick = function (evt) {
+            if (!ws) {
+                return false;
+            }
+            print("SEND: " + input.value);
+            ws.send(input.value);
+            return false;
+        };
+        document.getElementById("close").onclick = function (evt) {
+            if (!ws) {
+                return false;
+            }
+            ws.close();
+            return false;
+        };
+    });
+
+    let button = document.getElementById('upload')
+    button.addEventListener('click', event => {
+        let fileObj = document.getElementById('file').files[0]
+        if (fileObj) {
+            // let url = 'http://10.67.76.16:3000/file_upload'
+            const url = 'http://localhost:55678/upload'
+            let formData = new FormData()
+            formData.append('image', fileObj)
+            let xhr = new XMLHttpRequest()
+
+            xhr.onload = function () {
+                console.log('ok')
+                // console.log(JSON.parse(xhr.responseText))
+            }
+            xhr.onerror = function () {
+                console.log('fail')
+            }
+            xhr.open('post', url, true)
+            xhr.send(formData)
+
+        } else {
+            console.log('请选择文件')
+        }
+    })
+</script>
 </body>
 
 </html>
