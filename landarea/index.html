@@ -12,7 +12,7 @@
 <div>
     <input id="file" type="file"/>
     <button id="upload" type="button">upload</button>
-    <a href="http://127.0.0.1:55678/download" download="beauty.png">下载</a>
+    <a href="http://10.67.76.16:55678/download" download="beauty.png">下载</a>
 </div>
 <table>
     <tr>
@@ -88,7 +88,7 @@
         let fileObj = document.getElementById('file').files[0]
         if (fileObj) {
             // let url = 'http://10.67.76.16:3000/file_upload'
-            const url = 'http://localhost:55678/upload'
+            const url = 'http://10.67.76.16:55678/upload'
             let formData = new FormData()
             formData.append('image', fileObj)
             let xhr = new XMLHttpRequest()
